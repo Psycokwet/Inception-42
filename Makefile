@@ -6,7 +6,7 @@
 #    By: scarboni <scarboni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/06 20:15:49 by scarboni          #+#    #+#              #
-#    Updated: 2022/06/06 21:20:01 by scarboni         ###   ########.fr        #
+#    Updated: 2022/06/09 19:26:03 by scarboni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,20 @@ NAME = inception
 
 all: fclean re
 $(NAME): all
+
+#https://stackoverflow.com/questions/2214575/passing-arguments-to-make-run
+ifeq (cmd_in_doc,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(RUN_ARGS):;@:)
+endif
+
+init:
+	sudo service nginx stop
+
+cmd_in_doc:
+	sudo docker exec -it $(RUN_ARGS)
 	
 down:
 	docker-compose -f srcs/docker-compose.yml down
@@ -21,12 +35,12 @@ down:
 up:
 	docker-compose -f srcs/docker-compose.yml up
 
-clean: down
-	docker stop $$(sudo docker ps -qa)
-	docker rm $$(docker ps -qa)
-	docker rmi -f $$(docker images -qa)
-	docker volume rm $$(docker volume ls -q)
-	docker network rm $$(docker network ls -q)
+clean:
+	sudo docker stop $$(sudo docker ps -qa) || true
+	docker rm $$(docker ps -qa) || true
+	docker rmi -f $$(docker images -qa) || true
+	docker volume rm $$(docker volume ls -q) || true
+	docker network rm $$(docker network ls -q) || true
 
 define tester_sep
 	@printf "\n____.--.--.____.--.--.____.--.--.____.--.--.__** $(1) **__.--.--.____.--.--.____.--.--.____.--.--.____\n" ;\
