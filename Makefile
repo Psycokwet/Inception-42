@@ -6,10 +6,11 @@
 #    By: scarboni <scarboni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/06 20:15:49 by scarboni          #+#    #+#              #
-#    Updated: 2022/06/09 19:26:03 by scarboni         ###   ########.fr        #
+#    Updated: 2022/06/10 14:58:39 by scarboni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+include ./srcs/.env
 NAME = inception
 
 all: fclean re
@@ -35,12 +36,6 @@ down:
 up:
 	docker-compose -f srcs/docker-compose.yml up
 
-clean:
-	sudo docker stop $$(sudo docker ps -qa) || true
-	docker rm $$(docker ps -qa) || true
-	docker rmi -f $$(docker images -qa) || true
-	docker volume rm $$(docker volume ls -q) || true
-	docker network rm $$(docker network ls -q) || true
 
 define tester_sep
 	@printf "\n____.--.--.____.--.--.____.--.--.____.--.--.__** $(1) **__.--.--.____.--.--.____.--.--.____.--.--.____\n" ;\
@@ -53,7 +48,17 @@ info:
 	$(call tester_sep,docker volume ls)
 	$(call tester_sep,docker network ls)
 
-fclean: clean
+clean:
+	sudo docker stop $$(sudo docker ps -qa) || true
+	docker rm $$(docker ps -qa) || true
+	docker rmi -f $$(docker images -qa) || true
+	docker volume rm $$(docker volume ls -q) || true
+	docker network rm $$(docker network ls -q) || true
+
+clean_data: 
+	sudo rm -rf $(DATA_FOLDER)
+	
+fclean: clean clean_data
 	docker system prune -fa
 
 re: 

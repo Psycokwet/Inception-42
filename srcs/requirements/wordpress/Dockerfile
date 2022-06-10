@@ -5,13 +5,13 @@ FROM debian:buster
 
 # ESSENTIALS
 # same cache, so must be run in the same RUN
-RUN apt-get update \
-	apt-get upgrade \
-	apt-get install wget \
-	apt-get install php php-fpm php-mysq \
-	apt-get install php-mbstring \
-	apt-get install php-zip \
-	apt-get install php-gd 
+RUN apt-get update && \
+	apt-get upgrade && \
+	apt-get install -yq wget && \
+	apt-get install -yq php php-fpm php-mysq && \
+	apt-get install -yq php-mbstring && \
+	apt-get install -yq php-zip && \
+	apt-get install -yq php-gd 
 
 WORKDIR /root
 

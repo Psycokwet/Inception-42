@@ -5,9 +5,9 @@ FROM debian:buster
 
 # ESSENTIALS
 # same cache, so must be run in the same RUN
-RUN apt-get update \
-	apt-get upgrade \
-	apt-get install mariadb-server \
+RUN apt-get update && \
+	apt-get upgrade && \
+	apt-get install -yq mariadb-server && \
 	apt-get autoremove
 
 WORKDIR /root
