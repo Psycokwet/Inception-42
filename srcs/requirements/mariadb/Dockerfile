@@ -1,20 +1,17 @@
 #must contain mariadb only
+FROM alpine:3.14
+LABEL maintainer="scarboni@student.42.fr"
 
-# OS
-FROM debian:buster
+# Update package list and upgrade out-dated packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache mariadb mariadb-client
+RUN mkdir -p /run/mysqld && \
+	chown -R mysql:mysql /run/mysqld
 
-# ESSENTIALS
-# same cache, so must be run in the same RUN
-RUN apt-get update && \
-	apt-get upgrade && \
-	apt-get install -yq mariadb-server && \
-	apt-get autoremove
-
-WORKDIR /root
-
-COPY conf/start.sh /root/start.sh
+# Copy scripts
+COPY ./tools/start.sh /
 
 # Start initialization script
 # [,] exec form for perfs
 # ENTRYPOINT because CMD can be overrided, and we don't want it. Well, entrypoint can too, but less easily
-ENTRYPOINT [ /root/start.sh ]
+ENTRYPOINT ["sh", "/start.sh"]

@@ -1,37 +1,39 @@
-#must contain WORDPRESS + php-fpm
+FROM debian:buster 
+LABEL maintainer="scarboni@student.42.fr"
 
-# OS
-FROM debian:buster
+ARG PHP_VERSION
 
-# ESSENTIALS
-# same cache, so must be run in the same RUN
-RUN apt-get update && \
-	apt-get upgrade && \
-	apt-get install -yq wget && \
-	apt-get install -yq php php-fpm php-mysq && \
-	apt-get install -yq php-mbstring && \
-	apt-get install -yq php-zip && \
-	apt-get install -yq php-gd 
+RUN apt-get -y update && \
+	apt-get -y upgrade && \
+	apt-get install -y \
+		php${PHP_VERSION} \
+		php${PHP_VERSION}-mysql \
+		php${PHP_VERSION}-fpm \
+		php${PHP_VERSION}-gd \
+		php${PHP_VERSION}-mbstring \
+		php${PHP_VERSION}-zip \
+		mariadb-client \
+		wget
 
-WORKDIR /root
 
-# PHP MY ADMIN
+#user:group in debian is www-data
+RUN mkdir -p /var/www/html
+RUN chown -R www-data:www-data /var/www/html 
+# https://medium.com/swlh/wordpress-deployment-with-nginx-php-fpm-and-mariadb-using-docker-compose-55f59e5c1a
+RUN userdel -f www-data && useradd -u 82 www-data
 
-RUN mkdir -p /var/www/wp
-# RUN wp core download
+COPY ./tools/start.sh /start.sh
+COPY ./conf/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/ 
+COPY ./conf/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/
 
-# # Installing wordpress
-RUN wget -c https://wordpress.org/latest.tar.gz && \
-	tar -xvf latest.tar.gz && \
-	mv wordpress/ /var/www/wp/ && \
-	rm latest.tar.gz
+# ! Install wp-cli, using it to build, configure wordpress
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+	chmod +x wp-cli.phar && \
+	mv wp-cli.phar /usr/local/bin/wp
 
-# Moving wordpress configuration source file to proper destination
-COPY conf/wp-config.php /var/www/wp
+WORKDIR /var/www/html/wordpress
 
-COPY conf/start.sh /root/start.sh
-
-# Start initialization script
-# [,] exec form for perfs
-# ENTRYPOINT because CMD can be overrided, and we don't want it. Well, entrypoint can too, but less easily
-ENTRYPOINT [ /root/start.sh ]
+# # Start initialization script
+# # [,] exec form for perfs
+# # ENTRYPOINT because CMD can be overrided, and we don't want it. Well, entrypoint can too, but less easily
+ENTRYPOINT ["sh", "/start.sh"]
