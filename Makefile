@@ -6,7 +6,7 @@
 #    By: scarboni <scarboni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/06 20:15:49 by scarboni          #+#    #+#              #
-#    Updated: 2022/06/12 22:29:17 by scarboni         ###   ########.fr        #
+#    Updated: 2022/06/15 17:18:21 by scarboni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,6 +65,8 @@ info:
 	$(call tester_sep,docker ps -a)
 	$(call tester_sep,docker images -a)
 	$(call tester_sep,docker volume ls)
+	$(call tester_sep,docker volume inspect srcs_db)
+	$(call tester_sep,docker volume inspect srcs_wp)
 	$(call tester_sep,docker network ls)
 	$(call tester_sep,docker-compose -f $(SRCS) config)
 

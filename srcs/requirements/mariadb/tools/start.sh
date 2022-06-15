@@ -1,5 +1,4 @@
 #!/bin/sh
-
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	
 	chown -R mysql:mysql /var/lib/mysql

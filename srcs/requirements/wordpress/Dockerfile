@@ -20,9 +20,10 @@ RUN apt-get -y update && \
 RUN mkdir -p /var/www/html
 RUN chown -R www-data:www-data /var/www/html 
 # https://medium.com/swlh/wordpress-deployment-with-nginx-php-fpm-and-mariadb-using-docker-compose-55f59e5c1a
-RUN userdel -f www-data && useradd -u 82 www-data
 
-COPY ./tools/start.sh /start.sh
+RUN useradd  nginx
+# RUN userdel -f www-data && useradd -u 82 www-data
+
 COPY ./conf/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/ 
 COPY ./conf/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/
 
@@ -32,7 +33,7 @@ RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.ph
 	mv wp-cli.phar /usr/local/bin/wp
 
 WORKDIR /var/www/html/wordpress
-
+COPY ./tools/start.sh /start.sh
 # # Start initialization script
 # # [,] exec form for perfs
 # # ENTRYPOINT because CMD can be overrided, and we don't want it. Well, entrypoint can too, but less easily

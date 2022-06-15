@@ -1,6 +1,7 @@
 version: '3'
 services:
   mariadb:
+    image: mariadb:${LOGIN}
     env_file: #needed to access env from script
       - ".env"
     build: ./requirements/mariadb/
@@ -14,6 +15,7 @@ services:
     restart: always
 
   wordpress:
+    image: wordpress:${LOGIN}
     build:
       context: ./requirements/wordpress/ 
       args:
@@ -32,7 +34,7 @@ services:
     restart: always
 
   nginx:
-    image: nginx:mine
+    image: nginx:${LOGIN}
     build:
       context: ./requirements/nginx/ 
       args:

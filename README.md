@@ -10,6 +10,11 @@ make cmd_in_doc mariadb sh
 mysql -u root -p
 mysql -u root -p wordpress -e "select * from wp_comments;"
 
+make cmd_in_doc mariadb sh
+mysql -u scarboni -p
+mysql -u scarboni -p wordpress -e "select * from wp_comments;"
+
 show databases;
+use wordpress
 show tables;
 select * from wp_comments;
